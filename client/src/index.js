@@ -6,6 +6,7 @@ require("./draw-canvas");
 
 let PlayerTexture;
 let BulletTexture;
+let ws;
 
 const app = new Application();
 let id;
@@ -32,7 +33,7 @@ function render(newState) {
  * @param {{data: { type: string, value: any}}} message
  * @param {WebSocket} ws
  */
-function handleMessage(message, ws) {
+function handleMessage(message) {
   const data = JSON.parse(message.data);
   if (data.type === "id") {
     id = data.value;
@@ -43,7 +44,6 @@ function handleMessage(message, ws) {
     // Render players, their points and current timer.
     if (data.value.game.phase === "guess") {
       console.log(data.value);
-      ws.send(JSON.stringify({ id, guess: "this is my guess" }));
     } else if (data.value.game.phase === "scoring") {
       // Show the score and the result
       // Wait for players to click "ready"
@@ -61,8 +61,8 @@ function handleMessage(message, ws) {
 function initiateSockets() {
   const url = "127.0.0.1";
   const port = 3000;
-  const ws = new WebSocket(`ws://${url}:${port}`);
-  ws.onmessage = message => handleMessage(message, ws);
+  ws = new WebSocket(`ws://${url}:${port}`);
+  ws.onmessage = message => handleMessage(message);
 }
 
 /**
@@ -89,6 +89,17 @@ function loadAssets() {
   });
 }
 
+function sendGuess() {
+  const { value } = document.querySelector('[name="guessInput"]');
+  ws.send(JSON.stringify({ id, guess: value }));
+}
+
+function setupForms() {
+  document
+    .querySelector('[name="guessButton"]')
+    .addEventListener("click", sendGuess);
+}
+
 /**
  * Starts the game
  */
@@ -96,6 +107,7 @@ async function main() {
   // await loadAssets();
   setupRenderer();
   initiateSockets();
+  setupForms();
 }
 
 document.body.appendChild(app.view);

@@ -45,6 +45,7 @@ function reduceState() {
  */
 function handleClientEvents(clientEvents) {
   clientEvents.forEach(event => {
+    console.log(event);
     if (event.guess) {
       game.guesses[event.id] = event.guess;
     }
@@ -74,11 +75,9 @@ function gameLoop(clientEvents) {
     if (timer) {
       clearTimeout(timer);
     }
-
-    console.log("guess");
     // check that all players have guessed
 
-    if (game.guesses && Object.keys(game.guesses).length === players.size - 2) {
+    if (game.guesses && Object.keys(game.guesses).length === players.size) {
       console.log(game.guesses);
       game.phase = "scoring";
     }

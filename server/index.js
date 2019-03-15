@@ -75,7 +75,7 @@ function loop() {
 function heartbeat() {
   // Delete clients who have not responded in 30s
   clients.forEach((client, id) => {
-    const ttl = 30 * 1000;
+    const ttl = 5 * 1000;
     const now = new Date().getTime();
     if (client.lastPong < now - ttl) {
       client.ws.close();
@@ -96,6 +96,6 @@ setupExpress();
 
 server.on("connection", handleNewClient);
 setInterval(loop, 1000); // Check game events once a second
-setInterval(heartbeat, 5000); // Check that clients are still connected
+setInterval(heartbeat, 2000); // Check that clients are still connected
 
 console.log("Socket server up");
