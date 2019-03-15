@@ -1,6 +1,8 @@
 import { Application, Sprite, loader } from "pixi.js";
 import { bindKey, KEYS } from "./keyboard";
 
+require("./draw-canvas");
+
 let PlayerTexture;
 let BulletTexture;
 
