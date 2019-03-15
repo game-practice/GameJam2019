@@ -1,6 +1,18 @@
+const { isSynonym, getImage } = require("./getImage");
+const splitImage = require("./splitImage");
+
 const players = new Map();
 const game = { phase: "lobby", guesses: {} };
 let timer;
+
+let correctAnswer;
+
+const IMAGE_LOAD_STATUSES = {
+  NOT_LOADED: 0,
+  LOADING: 1,
+  LOADED: 2
+};
+let imageLoadStatus = IMAGE_LOAD_STATUSES.NOT_LOADED;
 
 /**
  * Adds a new player
@@ -52,6 +64,24 @@ function handleClientEvents(clientEvents) {
   });
 }
 
+function calculateScores() {
+  const { guesses } = game;
+  const scores = {};
+
+  Object.keys(guesses).forEach(playerId => {
+    const guess = guesses[playerId];
+    if (guess === correctAnswer) {
+      scores[playerId] = 2;
+    } else if (isSynonym(correctAnswer, guess)) {
+      scores[playerId] = 1;
+    } else {
+      scores[playerId] = 0;
+    }
+  });
+
+  return scores;
+}
+
 /**
  * Runs the game loop according to client events and current state
  * @param {{id: string, type: string, key: string}[]} clientEvents
@@ -64,13 +94,24 @@ function gameLoop(clientEvents) {
   const minPlayers = 2;
   const drawingTimeout = 4000;
   if (players.size >= minPlayers && game.phase === "lobby") {
-    game.guesses = {};
-    game.phase = "drawing";
-    timer = setTimeout(() => {
-      game.phase = "guess";
-    }, drawingTimeout);
+    correctAnswer = getImage();
+    imageLoadStatus = IMAGE_LOAD_STATUSES.LOADING;
+
+    splitImage(`${correctAnswer}.jpg`).then(() => {
+      imageLoadStatus = IMAGE_LOAD_STATUSES.LOADED;
+    });
+
+    // if image has been split and loaded, go to drawing phase
+    if (imageLoadStatus === IMAGE_LOAD_STATUSES.LOADED) {
+      game.phase = "drawing";
+      game.guesses = {};
+      timer = setTimeout(() => {
+        game.phase = "guess";
+      }, drawingTimeout);
+    }
   } else if (game.phase === "drawing") {
     // game.timeLeft = something
+    console.log("correctAnswer", correctAnswer);
   } else if (game.phase === "guess") {
     if (timer) {
       clearTimeout(timer);
@@ -80,6 +121,7 @@ function gameLoop(clientEvents) {
     if (game.guesses && Object.keys(game.guesses).length === players.size) {
       console.log(game.guesses);
       game.phase = "scoring";
+      game.scores = calculateScores();
     }
   } else if (game.phase === "scoring") {
     // Check that all players are "ready"
