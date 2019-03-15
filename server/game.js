@@ -1,6 +1,8 @@
+const countdown = require("countdown");
 const players = new Map();
 const game = { phase: "lobby", guesses: {} };
 let timer;
+let startTime = 4;
 
 /**
  * Adds a new player
@@ -52,6 +54,10 @@ function handleClientEvents(clientEvents) {
   });
 }
 
+const logGame = game => {
+  console.log(`${JSON.stringify(game, null, 2)}`);
+};
+
 /**
  * Runs the game loop according to client events and current state
  * @param {{id: string, type: string, key: string}[]} clientEvents
@@ -66,12 +72,17 @@ function gameLoop(clientEvents) {
   if (players.size >= minPlayers && game.phase === "lobby") {
     game.guesses = {};
     game.phase = "drawing";
+    logGame(game);
     timer = setTimeout(() => {
       game.phase = "guess";
     }, drawingTimeout);
   } else if (game.phase === "drawing") {
-    // game.timeLeft = something
+    startTime = startTime - 1;
+    game.timeLeft = startTime;
+    logGame(game);
   } else if (game.phase === "guess") {
+    game.timeLeft = 0;
+    logGame(game);
     if (timer) {
       clearTimeout(timer);
     }
