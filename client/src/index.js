@@ -1,5 +1,6 @@
 import { Application, Sprite, loader } from "pixi.js";
 import { bindKey, KEYS } from "./keyboard";
+import "./main.css";
 
 require("./draw-canvas");
 
