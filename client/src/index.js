@@ -1,4 +1,3 @@
-import { Application, Sprite, loader } from "pixi.js";
 import { bindKey, KEYS } from "./keyboard";
 import "./main.css";
 
@@ -8,7 +7,6 @@ let PlayerTexture;
 let BulletTexture;
 let ws;
 
-const app = new Application();
 let id;
 let state;
 
@@ -65,30 +63,6 @@ function initiateSockets() {
   ws.onmessage = message => handleMessage(message);
 }
 
-/**
- * Sets up background color and size playing field
- */
-function setupRenderer() {
-  app.renderer.backgroundColor = 0x1e1e1e;
-  app.renderer.resize(600, 600);
-}
-
-/**
- * Loads assets for player and bullet
- */
-function loadAssets() {
-  const PLAYER_IMAGE_ASSET = "assets/player.png";
-  const BULLET_IMAGE_ASSET = "assets/bullet.png";
-
-  return new Promise(res => {
-    loader.add([PLAYER_IMAGE_ASSET, BULLET_IMAGE_ASSET]).load(() => {
-      PlayerTexture = loader.resources[PLAYER_IMAGE_ASSET].texture;
-      BulletTexture = loader.resources[BULLET_IMAGE_ASSET].texture;
-      res();
-    });
-  });
-}
-
 function sendGuess() {
   const { value } = document.querySelector('[name="guessInput"]');
   ws.send(JSON.stringify({ id, guess: value }));
@@ -105,10 +79,8 @@ function setupForms() {
  */
 async function main() {
   // await loadAssets();
-  setupRenderer();
   initiateSockets();
   setupForms();
 }
 
-document.body.appendChild(app.view);
 main();
