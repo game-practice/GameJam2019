@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "matter-js": "^0.14.2",
     "ws": "^6.2.0"
   },
   "devDependencies": {

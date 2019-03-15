@@ -1,29 +1,14 @@
-const Matter = require("matter-js");
-
 const players = new Map();
-const world = {
-  bullets: []
-};
-
-const SPEED = 5;
-const ROTATION_SPEED = 0.08;
-const BULLET_SPEED = 10;
+const game = { phase: "lobby", guesses: {} };
+let timer;
 
 /**
  * Adds a new player
  * @param {string} playerId
  */
 function newPlayer(playerId) {
-  const initialState = {
-    x: Math.random() * 500,
-    y: Math.random() * 500,
-    width: 52,
-    height: 70,
-    rotation: Math.random() * 2 * Math.PI
-  };
   players.set(playerId, {
-    pressedKeys: {},
-    state: initialState
+    points: 0
   });
 }
 
@@ -43,83 +28,58 @@ function isAlive(id) {
   return players.has(id);
 }
 
-/**
- * Check pressedkeys, update player state
- * @param {{pressedKeys: {}, state: {x: number, y: number, width:number, height: number, rotation: number}}} player
- * @param {*} id
- */
-function updatePlayer(player, id) {
-  const { pressedKeys, state } = player;
-  players.set(id, { ...player, state });
-}
-
-function checkCollisions() {
-  // Check all players vs all bullets for spherical collision
-  const { bullets } = world;
-  bullets.forEach(bullet => {
-    players.forEach(({ state: player }, playerId) => {
-      const playerRadius = Math.min(player.width, player.height);
-
-      const dx = player.x - bullet.x;
-      const dy = player.y - bullet.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < playerRadius + bullet.radius) {
-        players.delete(playerId);
-      }
-    });
-  });
-}
-
-/**
- * Updates state according to pressedKeys and last state
- * @returns The updated state
- */
-function updateState() {
-  players.forEach(updatePlayer);
-  checkCollisions();
-
+function reduceState() {
+  //
   const nextState = {
-    players: [...players.keys()]
-      .map(id => ({ id, state: players.get(id).state }))
-      .reduce((prevState, client) => {
-        return { ...prevState, [client.id]: client.state };
-      }, {}),
-    world
+    players: [...players.keys()],
+    // .map(id => ({ id, state: players.get(id).state })),
+    game
   };
 
   return nextState;
 }
 
 /**
- * Takes a list of key events and sets the pressedKeys object accordingly
- * @param {{id: string, type: string, key: string}[]} keyEvents
+ * Takes a list of events and update
+ * @param {{id: string, type: string, key: string}[]} clientEvents
  */
-function handleKeyInput(keyEvents) {
-  keyEvents.forEach(keyEvent => {
-    const client = players.get(keyEvent.id);
-    if (client) {
-      if (
-        client.pressedKeys[keyEvent.key] === "keydown" &&
-        keyEvent.type === "keyup"
-      ) {
-        client.pressedKeys[keyEvent.key] = "release";
-      } else {
-        client.pressedKeys[keyEvent.key] = keyEvent.type;
-      }
-      // check if previously keydown and now keyup
+function handleClientEvents(clientEvents) {
+  clientEvents.forEach(event => {
+    if (event.guess) {
+      game.guesses[event.id] = event.guess;
     }
   });
 }
 
 /**
- * Runs the game loop according to key events and current state
- * @param {{id: string, type: string, key: string}[]} keyEvents
+ * Runs the game loop according to client events and current state
+ * @param {{id: string, type: string, key: string}[]} clientEvents
  */
-function gameLoop(keyEvents) {
-  handleKeyInput(keyEvents);
-  const nextState = updateState();
-  return nextState;
+function gameLoop(clientEvents) {
+  // Are we two or more players?
+
+  // const nextState = state;
+  handleClientEvents(clientEvents);
+  const minPlayers = 2;
+  const drawingTimeout = 4000;
+  if (players.size >= minPlayers && game.phase === "lobby") {
+    game.guesses = {};
+    game.phase = "drawing";
+    timer = setTimeout(() => {
+      game.phase = "guess";
+    }, drawingTimeout);
+  } else if (game.phase === "guess") {
+    clearInterval(timer);
+    console.log("guess");
+    // check that all players have guessed
+
+    if (game.guesses && Object.keys(game.guesses).length > 0) {
+      console.log(game.guesses);
+      game.phase = "lobby";
+    }
+  }
+  // state = nextState;
+  return reduceState();
 }
 
 module.exports = { gameLoop, newPlayer, removePlayer, isAlive };

@@ -4,7 +4,7 @@ const { newPlayer, removePlayer, gameLoop, isAlive } = require("./game");
 const server = new WebSocket.Server({ port: 3000, clientTracking: true });
 
 const clients = new Map();
-const keyEvents = [];
+const clientEvents = [];
 
 /**
  * Takes data and broadcasts it to all clients
@@ -27,7 +27,7 @@ function handleMessage(message) {
   if (data.type === "pong" && clients.has(data.id)) {
     clients.get(data.id).lastPong = new Date().getTime();
   } else {
-    keyEvents.push(data);
+    clientEvents.push(data);
   }
 }
 
@@ -48,8 +48,8 @@ function handleNewClient(ws) {
  * Calculate new state and broadcast it to clients
  */
 function loop() {
-  const nextState = gameLoop(keyEvents);
-  keyEvents.length = 0; // empties the inputs array
+  const nextState = gameLoop(clientEvents);
+  clientEvents.length = 0; // empties the inputs array
   broadcast({ type: "state", value: nextState });
 }
 
@@ -78,7 +78,7 @@ function heartbeat() {
 }
 
 server.on("connection", handleNewClient);
-setInterval(loop, 1000 / 60); // 60 frames per second
+setInterval(loop, 1000); // Check game events once a second
 setInterval(heartbeat, 5000); // Check that clients are still connected
 
 console.log("Socket server up");

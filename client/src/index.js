@@ -34,10 +34,17 @@ function handleMessage(message, ws) {
   if (data.type === "id") {
     id = data.value;
     Object.values(KEYS).forEach(key => bindKey(id, key, ws));
-  } else if (data.type === "state") {
-    render(data.value);
   } else if (data.type === "ping") {
     ws.send(JSON.stringify({ id, type: "pong" }));
+  } else if (data.type === "state") {
+    // Render players, their points and current timer.
+    if (data.value.game.phase === "guess") {
+      console.log(data.value);
+      ws.send(JSON.stringify({ id, guess: "this is my guess" }));
+    }
+    console.log(data.value.game);
+  } else if (data.type === "draw") {
+    // Draw on the image until timeout
   }
 }
 

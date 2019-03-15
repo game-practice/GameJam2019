@@ -12,7 +12,6 @@ module.exports = {
     filename: "game.js"
   },
   plugins: [
-    new CopyWebpackPlugin([{ from: "assets", to: "assets" }]),
     new HtmlWebpackPlugin({
       inject: "body",
       template: `${APP_DIR}/index.html`
