@@ -18,11 +18,8 @@ async function splitImage(fileName) {
   const leftCropped = left.crop(0, 0, w / 2, h);
   const rightCropped = right.crop(w / 2, 0, w / 2, h);
 
-  const basePath = imagePath.split(".")[0];
-  const extension = imagePath.split(".")[1];
-
-  const leftPath = `${basePath}left.${extension}`;
-  const rightPath = `${basePath}right.${extension}`;
+  const leftPath = path.join(__dirname, "assets", "left.jpg");
+  const rightPath = path.join(__dirname, "assets", "right.jpg");
 
   await leftCropped.writeAsync(leftPath);
   await rightCropped.writeAsync(rightPath);
