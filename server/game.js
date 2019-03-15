@@ -66,20 +66,16 @@ function handleClientEvents(clientEvents) {
 
 function calculateScores() {
   const { guesses } = game;
-  const scores = {};
 
   Object.keys(guesses).forEach(playerId => {
     const guess = guesses[playerId];
+    game.scores[playerId] = game.scores[playerId] || 0;
     if (guess === correctAnswer) {
-      scores[playerId] = 2;
+      game.scores[playerId] += 2;
     } else if (isSynonym(correctAnswer, guess)) {
-      scores[playerId] = 1;
-    } else {
-      scores[playerId] = 0;
+      game.scores[playerId] += 1;
     }
   });
-
-  return scores;
 }
 
 /**
@@ -121,7 +117,7 @@ function gameLoop(clientEvents) {
     if (game.guesses && Object.keys(game.guesses).length === players.size) {
       console.log(game.guesses);
       game.phase = "scoring";
-      game.scores = calculateScores();
+      calculateScores();
     }
   } else if (game.phase === "scoring") {
     // Check that all players are "ready"
