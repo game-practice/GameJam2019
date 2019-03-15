@@ -1,4 +1,4 @@
-# GameJam2019
+# GameJam2019 - Hasse and Filip Version
 
 Starter repository for the "Make a game"-session of the K-weekend in Spring 2019
 
