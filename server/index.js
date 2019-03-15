@@ -1,10 +1,25 @@
 const WebSocket = require("ws");
+const express = require("express");
+const path = require("path");
 const { newPlayer, removePlayer, gameLoop, isAlive } = require("./game");
 
 const server = new WebSocket.Server({ port: 3000, clientTracking: true });
 
 const clients = new Map();
 const clientEvents = [];
+
+const app = express();
+const expressPort = 3001;
+
+function setupExpress() {
+  const dir = path.join(__dirname, "assets");
+  app.use(express.static(dir));
+
+  // load with e.g. localhost:3001/money.png
+  app.listen(expressPort, () =>
+    console.log(`listening on port ${expressPort}`)
+  );
+}
 
 /**
  * Takes data and broadcasts it to all clients
@@ -76,6 +91,8 @@ function heartbeat() {
 
   broadcast({ type: "ping" });
 }
+
+setupExpress();
 
 server.on("connection", handleNewClient);
 setInterval(loop, 1000); // Check game events once a second
