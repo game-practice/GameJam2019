@@ -26,6 +26,10 @@ function render(newState) {
   state = newState;
 }
 
+const renderTimeLeft = timeLeft => {
+  document.getElementById("timeleft").innerText = timeLeft;
+};
+
 /**
  * Handles a message from the server
  * @param {{data: { type: string, value: any}}} message
@@ -39,6 +43,7 @@ function handleMessage(message) {
   } else if (data.type === "ping") {
     ws.send(JSON.stringify({ id, type: "pong" }));
   } else if (data.type === "state") {
+    renderTimeLeft(data.value.game.timeLeft);
     // Render players, their points and current timer.
     if (data.value.game.phase === "guess") {
       console.log(data.value);
@@ -46,10 +51,10 @@ function handleMessage(message) {
       // Show the score and the result
       // Wait for players to click "ready"
       console.log("Scoring Phase!");
+    } else if (data.type === "drawing") {
+      // Draw on the image until timeout
     }
     console.log(data.value.game);
-  } else if (data.type === "draw") {
-    // Draw on the image until timeout
   }
 }
 
