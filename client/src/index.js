@@ -41,6 +41,10 @@ function handleMessage(message, ws) {
     if (data.value.game.phase === "guess") {
       console.log(data.value);
       ws.send(JSON.stringify({ id, guess: "this is my guess" }));
+    } else if (data.value.game.phase === "scoring") {
+      // Show the score and the result
+      // Wait for players to click "ready"
+      console.log("Scoring Phase!");
     }
     console.log(data.value.game);
   } else if (data.type === "draw") {

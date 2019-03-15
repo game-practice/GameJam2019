@@ -68,17 +68,24 @@ function gameLoop(clientEvents) {
     timer = setTimeout(() => {
       game.phase = "guess";
     }, drawingTimeout);
+  } else if (game.phase === "drawing") {
+    // game.timeLeft = something
   } else if (game.phase === "guess") {
-    clearInterval(timer);
+    if (timer) {
+      clearTimeout(timer);
+    }
+
     console.log("guess");
     // check that all players have guessed
 
-    if (game.guesses && Object.keys(game.guesses).length > 0) {
+    if (game.guesses && Object.keys(game.guesses).length === players.size - 2) {
       console.log(game.guesses);
-      game.phase = "lobby";
+      game.phase = "scoring";
     }
+  } else if (game.phase === "scoring") {
+    // Check that all players are "ready"
+    game.phase = "lobby";
   }
-  // state = nextState;
   return reduceState();
 }
 
