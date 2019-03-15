@@ -150,3 +150,15 @@ function touchWins(e) {
 
 canvas.addEventListener("mousedown", mouseWins);
 canvas.addEventListener("touchstart", touchWins);
+
+/*
+ canvasToImage :: Object canvasElement -> String filetype -> Int imageQuality -> data-URL
+  Example:
+  const dataUrl = canvasToImage(canvas, "image/jpeg", 0.5);
+ */
+const canvasToImage = (canvasElement, fileType, imageQuality) => {
+  const dataUrl = canvasElement.toDataURL(fileType, imageQuality);
+  return dataUrl;
+};
+
+// TODO: convert canvas image to png or jpg
