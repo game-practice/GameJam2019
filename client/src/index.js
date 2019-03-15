@@ -5,60 +5,8 @@ let PlayerTexture;
 let BulletTexture;
 
 const app = new Application();
-const playerSprites = {};
-const bulletSprites = [];
 let id;
 let state;
-
-/**
- * Renders bullets by removing them all and adding them again
- * @param {object} newState
- */
-function renderBullets(newState) {
-  bulletSprites.forEach(bulletSprite => {
-    app.stage.removeChild(bulletSprite);
-  });
-  bulletSprites.length = 0; // emptying bulletSprites array
-
-  newState.world.bullets.forEach(bullet => {
-    const bulletSprite = new Sprite(BulletTexture);
-    bulletSprite.x = bullet.x;
-    bulletSprite.y = bullet.y;
-    app.stage.addChild(bulletSprite);
-    bulletSprites.push(bulletSprite);
-  });
-}
-
-/**
- * Renders a player on the screen, including potential new players
- * @param {string} playerId
- * @param {{players: {}, world: {bullets: {}[]}}} newState
- */
-function renderPlayer(playerId, newState) {
-  const player = newState.players[playerId];
-
-  if (!playerSprites[playerId]) {
-    const newPlayer = new Sprite(PlayerTexture);
-    newPlayer.anchor.set(0.5, 0.5);
-    app.stage.addChild(newPlayer);
-    playerSprites[playerId] = newPlayer;
-    playerSprites[playerId].width = player.width;
-    playerSprites[playerId].height = player.height;
-  }
-
-  playerSprites[playerId].x = player.x;
-  playerSprites[playerId].y = player.y;
-  playerSprites[playerId].rotation = player.rotation;
-}
-
-/**
- * Removes a dead player
- * @param {string} playerId
- */
-function removeDeadPlayer(playerId) {
-  app.stage.removeChild(playerSprites[playerId]);
-  delete playerSprites[playerId];
-}
 
 /**
  * Renders the game according to the newState object
@@ -72,10 +20,6 @@ function render(newState) {
 
   const alivePlayers = serverPlayers.filter(x => clientPlayers.includes(x));
   const deadPlayers = clientPlayers.filter(x => !serverPlayers.includes(x));
-
-  deadPlayers.forEach(removeDeadPlayer);
-  alivePlayers.forEach(playerId => renderPlayer(playerId, newState));
-  renderBullets(newState);
 
   state = newState;
 }
@@ -135,7 +79,7 @@ function loadAssets() {
  * Starts the game
  */
 async function main() {
-  await loadAssets();
+  // await loadAssets();
   setupRenderer();
   initiateSockets();
 }
