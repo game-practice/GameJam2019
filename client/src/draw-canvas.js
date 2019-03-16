@@ -1,15 +1,15 @@
-var sheet = document.getElementById("sheet");
-var context = sheet.getContext("2d");
-var canvas = document.getElementById("sheet");
+const sheet = document.getElementById("sheet");
+let context = sheet.getContext("2d");
+const canvas = document.getElementById("sheet");
 context = canvas.getContext("2d");
 context.strokeStyle = "#ff0000";
 context.lineJoin = "round";
 context.lineWidth = 5;
 
-var clickX = [];
-var clickY = [];
-var clickDrag = [];
-var paint;
+const clickX = [];
+const clickY = [];
+const clickDrag = [];
+let paint;
 
 /**
  * Add information where the user clicked at.
@@ -24,36 +24,11 @@ function addClick(x, y, dragging) {
 }
 
 /**
- * Redraw the complete canvas.
- */
-function redraw() {
-  // Clears the canvas
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
-  for (var i = 0; i < clickX.length; i += 1) {
-    if (!clickDrag[i] && i == 0) {
-      context.beginPath();
-      context.moveTo(clickX[i], clickY[i]);
-      context.stroke();
-    } else if (!clickDrag[i] && i > 0) {
-      context.closePath();
-
-      context.beginPath();
-      context.moveTo(clickX[i], clickY[i]);
-      context.stroke();
-    } else {
-      context.lineTo(clickX[i], clickY[i]);
-      context.stroke();
-    }
-  }
-}
-
-/**
  * Draw the newly added point.
  * @return {void}
  */
 function drawNew() {
-  var i = clickX.length - 1;
+  const i = clickX.length - 1;
   console.log("preparing to draw");
   if (!clickDrag[i]) {
     if (clickX.length == 0) {
@@ -75,8 +50,8 @@ function drawNew() {
 
 function mouseDownEventHandler(e) {
   paint = true;
-  var x = e.pageX - canvas.offsetLeft;
-  var y = e.pageY - canvas.offsetTop;
+  const x = e.pageX - canvas.offsetLeft;
+  const y = e.pageY - canvas.offsetTop;
   if (paint) {
     addClick(x, y, false);
     drawNew();
@@ -101,8 +76,8 @@ function mouseUpEventHandler(e) {
 }
 
 function mouseMoveEventHandler(e) {
-  var x = e.pageX - canvas.offsetLeft;
-  var y = e.pageY - canvas.offsetTop;
+  const x = e.pageX - canvas.offsetLeft;
+  const y = e.pageY - canvas.offsetTop;
   if (paint) {
     addClick(x, y, true);
     drawNew();
@@ -119,7 +94,6 @@ function touchMoveEventHandler(e) {
     drawNew();
   }
 }
-
 function removeRaceHandlers() {
   canvas.removeEventListener("mousedown", mouseWins);
   canvas.removeEventListener("touchstart", touchWins);

@@ -5,8 +5,6 @@ import "./react-index";
 
 require("./draw-canvas");
 
-let PlayerTexture;
-let BulletTexture;
 let ws;
 
 let id;
