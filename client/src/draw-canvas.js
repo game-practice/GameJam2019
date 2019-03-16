@@ -2,7 +2,7 @@ const sheet = document.getElementById("sheet");
 let context = sheet.getContext("2d");
 const canvas = document.getElementById("sheet");
 context = canvas.getContext("2d");
-context.strokeStyle = "#ff0000";
+context.strokeStyle = "#287f1d";
 context.lineJoin = "round";
 context.lineWidth = 5;
 
@@ -135,4 +135,5 @@ const canvasToImage = (canvasElement, fileType, imageQuality) => {
   return dataUrl;
 };
 
+export default canvasToImage;
 // TODO: convert canvas image to png or jpg

@@ -1,7 +1,7 @@
 import { bindKey, KEYS } from "./keyboard";
 import "./main.css";
 
-require("./draw-canvas");
+import canvasToImage from "./draw-canvas";
 
 let ws;
 
@@ -31,6 +31,9 @@ function render(newState) {
  */
 function handleMessage(message) {
   const data = JSON.parse(message.data);
+
+  data.value.game = {};
+  data.value.game.phase = "drawing";
   if (data.type === "id") {
     id = data.value;
     Object.values(KEYS).forEach(key => bindKey(id, key, ws));
@@ -38,7 +41,27 @@ function handleMessage(message) {
     ws.send(JSON.stringify({ id, type: "pong" }));
   } else if (data.type === "state") {
     // Render players, their points and current timer.
-    if (data.value.game.phase === "guess") {
+
+    if (data.value.game.phase === "lobby") {
+      // do something
+      console.log("data.value", data.value);
+    } else if (data.value.game.phase === "drawing") {
+      // get images and show them
+      const imagePath = `${window.location.host.split(":8080")[0]}:3001`;
+      const left = `http://${imagePath}/left.jpg`;
+      const right = `${imagePath}/right.jpg`;
+
+      const img = new Image(400, 400);
+      img.src = left;
+      img.id = "left";
+
+      const game = document.getElementById("game");
+
+      console.log("game.childNodes.length", game.childNodes.length);
+      if (game.childNodes.length < 8) {
+        game.appendChild(img);
+      }
+    } else if (data.value.game.phase === "guess") {
       console.log(data.value);
     } else if (data.value.game.phase === "scoring") {
       // Show the score and the result
