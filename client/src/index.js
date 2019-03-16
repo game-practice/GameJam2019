@@ -1,8 +1,6 @@
 import { bindKey, KEYS } from "./keyboard";
 import "./main.css";
 
-import "./react-index";
-
 require("./draw-canvas");
 
 let ws;
