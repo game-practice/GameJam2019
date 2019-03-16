@@ -49,7 +49,6 @@ function handleMessage(message) {
       // get images and show them
       const imagePath = `${window.location.host.split(":8080")[0]}:3001`;
       const left = `http://${imagePath}/left.jpg`;
-      const right = `${imagePath}/right.jpg`;
 
       const img = new Image(400, 400);
       img.src = left;
